@@ -1,55 +1,31 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { BigInt, log, Address } from "@graphprotocol/graph-ts"
 import { Contract, Approval, Transfer } from "../generated/Contract/Contract"
-import { ExampleEntity } from "../generated/schema"
+import { TransferEvent as TransferEventEntity, Transfer as TransferEntity } from "../generated/schema"
 
-export function handleApproval(event: Approval): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
+export function handleTransfer(event: Transfer): void {
+  let eventid = event.block.hash.toHex() + '-' + event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  let theevent = new TransferEntity(eventid)
+  theevent.address = event.address
+  theevent.logIndex = event.logIndex
+  theevent.from = event.params.from
+  theevent.to = event.params.to
+  theevent.value = event.params.value
+  theevent.save()
 
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (entity == null) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
-
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
+  let entity = TransferEventEntity.load(event.transaction.hash.toHex())
+  if(!entity) {
+    entity = new TransferEventEntity(event.transaction.hash.toHex())
+    entity.block = event.block.number
+    entity.timestamp = event.block.timestamp
+    entity.transfers = [eventid]
+  }
+  else {
+    let transfers = entity.transfers
+    transfers.push(eventid)
+    entity.transfers = transfers
   }
 
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
-
-  // Entity fields can be set based on event parameters
-  entity.owner = event.params.owner
-  entity.spender = event.params.spender
-
-  // Entities can be written to the store with `.save()`
   entity.save()
 
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.name(...)
-  // - contract.approve(...)
-  // - contract.totalSupply(...)
-  // - contract.transferFrom(...)
-  // - contract.decimals(...)
-  // - contract.balanceOf(...)
-  // - contract.symbol(...)
-  // - contract.transfer(...)
-  // - contract.allowance(...)
+  //handleBlock(event)
 }
-
-export function handleTransfer(event: Transfer): void {}

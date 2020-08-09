@@ -1,13 +1,13 @@
 {
-  "name": "crv-distribution",
+  "name": "crv-distribution-bpt",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pengiundev/crv-distribution",
-    "create-local": "graph create --node http://localhost:8020/ pengiundev/crv-distribution",
-    "remove-local": "graph remove --node http://localhost:8020/ pengiundev/crv-distribution",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pengiundev/crv-distribution"
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ pengiundev/crv-distribution-bpt",
+    "create-local": "graph create --node http://localhost:8020/ pengiundev/crv-distribution-bpt",
+    "remove-local": "graph remove --node http://localhost:8020/ pengiundev/crv-distribution-bpt",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pengiundev/crv-distribution-bpt"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.18.0",
